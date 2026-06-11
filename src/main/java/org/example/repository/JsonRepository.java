@@ -81,7 +81,7 @@ public class JsonRepository {
         return removed;
     }
 
-    private static int toInt(Object val) {
+    static int toInt(Object val) {
         if (val instanceof Integer i) return i;
         if (val instanceof Long l) return l.intValue();
         if (val instanceof Number n) return n.intValue();

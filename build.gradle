@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'jacoco'
 }
 
 group = 'org.example'
@@ -18,7 +19,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'org.example.Main'
+        attributes 'Main-Class': 'org.example.App'
     }
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
@@ -28,4 +29,32 @@ jar {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+def jacocoExcludes = ['**/App.class']
+
+jacocoTestReport {
+    dependsOn test
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, excludes: jacocoExcludes)
+    }))
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, excludes: jacocoExcludes)
+    }))
+    violationRules {
+        rule {
+            limit {
+                minimum = 1.00
+            }
+        }
+    }
 }
